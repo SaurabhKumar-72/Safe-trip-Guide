@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTrip Guide - Tourist Safety & Fare Estimator</title>
+    <link rel="stylesheet" href="new1.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1>SafeTrip Guide</h1>
+            <p>Street-Smart Tourist Safety Alerts & Fair Price Estimator for India</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Search Section -->
+        <section class="card">
+            <h2>Search Indian Destination</h2>
+            <p class="subtitle">Enter any Indian city, hill station, or heritage town (e.g., Manali, Goa, Jaipur,
+                Varanasi, Delhi):</p>
+            <div class="input-group">
+                <input type="text" id="city-input" placeholder="Type city name here...">
+                <button id="search-btn">Check Safety & Guide</button>
+            </div>
+        </section>
+
+        <!-- Destination Result Card -->
+        <section id="result-card" class="card hidden">
+            <h3 id="city-name"></h3>
+            <p id="city-desc"></p>
+
+            <div class="advisory-box">
+                <h4>Ground Safety Alerts & Tourist Precautions:</h4>
+                <ul id="alerts-list"></ul>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Fair Fare Estimator (India)</h2>
+            <p class="subtitle">Check realistic local transit pricing to prevent overcharging:</p>
+
+            <div class="calculator-grid">
+                <div class="input-field">
+                    <label for="distance-input">Estimated Distance (in KM):</label>
+                    <input type="number" id="distance-input" placeholder="e.g. 8" min="1">
+                </div>
+
+                <div class="input-field">
+                    <label for="vehicle-select">Vehicle Type:</label>
+                    <select id="vehicle-select">
+                        <option value="auto">Auto Rickshaw (Standard ~₹12/KM)</option>
+                        <option value="cab">Taxi / Cab (Standard ~₹18/KM)</option>
+                        <option value="bike">Bike Taxi (Standard ~₹7/KM)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="calc-fare-btn">Calculate Fair Estimate</button>
+            <div id="fare-result" class="result-badge hidden"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>SafeTrip Guide | Smart Tourism Track</p>
+    </footer>
+
+    <script src="new1.js"></script>
+</body>
+
+</html>

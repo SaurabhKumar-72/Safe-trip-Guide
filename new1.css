@@ -1,0 +1,153 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: whitesmoke;
+  color: black;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  background: darkblue;
+  color: white;
+  padding: 30px 0;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.header p {
+  font-size: 1rem;
+  color: lightblue;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 20px;
+  border: 1px solid lightgray;
+}
+
+.card h2 {
+  font-size: 1.3rem;
+  color: darkblue;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: dimgray;
+  margin-bottom: 16px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid gray;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: royalblue;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button:hover {
+  background-color: navy;
+}
+
+.calculator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.input-field label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.advisory-box {
+  margin-top: 18px;
+  background-color: lightyellow;
+  border-left: 5px solid darkorange;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.advisory-box h4 {
+  color: saddlebrown;
+  margin-bottom: 10px;
+}
+
+.advisory-box ul {
+  padding-left: 20px;
+}
+
+.advisory-box li {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: darkred;
+}
+
+.result-badge {
+  margin-top: 16px;
+  padding: 14px;
+  background-color: honeydew;
+  border: 1px solid seagreen;
+  color: darkgreen;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.hidden {
+  display: none;
+}
+
+.footer {
+  text-align: center;
+  padding: 30px 0;
+  color: gray;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .input-group,
+  .calculator-grid {
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+}
