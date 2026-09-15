@@ -1,5 +1,4 @@
 # Safe-trip-Guide
-# SafeTrip Guide
 
 SafeTrip Guide is a lightweight, zero-login web utility designed to help travelers in India avoid street scams and transit overcharging. 
 
