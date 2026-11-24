@@ -1,126 +1,325 @@
-// DOM elements 
-var searchBtn = document.getElementById("search-btn");
-var cityInput = document.getElementById("city-input");
-var resultCard = document.getElementById("result-card");
-var cityNameEl = document.getElementById("city-name");
-var cityDescEl = document.getElementById("city-desc");
-var alertsList = document.getElementById("alerts-list");
+// DOM Elements
+const searchBtn = document.getElementById("search-btn");
+const cityInput = document.getElementById("city-input");
+const resultCard = document.getElementById("result-card");
+const cityNameEl = document.getElementById("city-name");
+const cityDescEl = document.getElementById("city-desc");
+const alertsList = document.getElementById("alerts-list");
+const cacheTag = document.getElementById("cache-tag");
+const regionRateTag = document.getElementById("region-rate-tag");
+const riskBadge = document.getElementById("risk-badge");
+const localTipEl = document.getElementById("local-tip");
+const networkStatus = document.getElementById("network-status");
 
-var calcBtn = document.getElementById("calc-fare-btn");
-var distanceInput = document.getElementById("distance-input");
-var vehicleSelect = document.getElementById("vehicle-select");
-var fareResult = document.getElementById("fare-result");
+const fareCitySelect = document.getElementById("fare-city-select");
+const vehicleSelect = document.getElementById("vehicle-select");
+const distanceInput = document.getElementById("distance-input");
+const quotedInput = document.getElementById("quoted-input");
+const nightChargeCheckbox = document.getElementById("night-charge");
+const calcBtn = document.getElementById("calc-fare-btn");
+const fareResult = document.getElementById("fare-result");
+const fareRangeEl = document.getElementById("fare-range");
+const fareBreakdownEl = document.getElementById("fare-breakdown");
+const overchargeVerdictEl = document.getElementById("overcharge-verdict");
 
-// 1. Search Function (Wikipedia + Specific Indian Scams)
-searchBtn.addEventListener("click", async function () {
-  var userCity = cityInput.value.trim();
+const copyLocBtn = document.getElementById("copy-loc-btn");
+const gpsFeedback = document.getElementById("gps-feedback");
 
-  if (userCity === "") {
-    alert("Kripya kisi Indian tourist spot ya shehar ka naam dalein!");
+// 1. Live Online/Offline Status Monitor
+function updateNetworkBadge() {
+  if (navigator.onLine) {
+    networkStatus.textContent = "● Online & Live";
+    networkStatus.className = "status-pill online";
+  } else {
+    networkStatus.textContent = "● Offline Mode (Cached Data)";
+    networkStatus.className = "status-pill offline";
+  }
+}
+window.addEventListener("online", updateNetworkBadge);
+window.addEventListener("offline", updateNetworkBadge);
+updateNetworkBadge();
+
+// 2. City-Specific Advisory & Auto-Tariff Sync
+function getCitySafetyProfile(city) {
+  const key = city.toLowerCase();
+
+  if (key.includes("goa") || key.includes("beach") || key.includes("gokarna") || key.includes("puri")) {
+    return {
+      tariffRegion: "goa",
+      tariffLabel: "Coastal Tourist Tariff",
+      risk: "High Tourist Traffic",
+      tip: "💡 Local Tip: Install 'GoaMiles' before arriving at Mopa/Dabolim airport—private taxi counters charge up to 2x.",
+      scams: [
+        "Airport & Station Cab Cartels: Local taxis rarely run on meters. Use GoaMiles or official prepaid counters.",
+        "Beach Watersports Touts: Unregistered agents quote cheap combo packs without safety gear. Verify registered operators and life jackets.",
+        "Scooter Rental Fuel Trick: Rented scooters come nearly empty, and leftover petrol isn't refunded—refuel in small amounts."
+      ]
+    };
+  }
+
+  if (key.includes("manali") || key.includes("shimla") || key.includes("kullu") || key.includes("rohtang") || key.includes("rishikesh") || key.includes("mussoorie") || key.includes("nainital")) {
+    return {
+      tariffRegion: "hills",
+      tariffLabel: "Hill Terrain Tariff",
+      risk: "Terrain & Permit Caution",
+      tip: "💡 Local Tip: Download offline Google Maps before crossing Manali/Rishikesh town limits where 4G/5G drops.",
+      scams: [
+        "Roadside Snow Gear Trap: Shops en route to Solang/Rohtang quote ₹800–₹1000 for snow suits/boots. Standard union rate is ₹250–₹300.",
+        "Permit Black-Marketing: Local agents overcharge for Rohtang/Atal Tunnel permits. Book directly via HP Tourism's official website.",
+        "Landslide & Night Driving Risk: Avoid unpaved mountain shortcuts after dark or during heavy monsoon alerts."
+      ]
+    };
+  }
+
+  if (key.includes("jaipur") || key.includes("udaipur") || key.includes("jodhpur") || key.includes("rajasthan")) {
+    return {
+      tariffRegion: "tier2",
+      tariffLabel: "Tier-2 City Tariff",
+      risk: "Commission & Guide Caution",
+      tip: "💡 Local Tip: Buy the Composite Monument Ticket in Jaipur to skip queues and avoid touts at individual fort gates.",
+      scams: [
+        "Commission Factory Shopping: Auto drivers pitch 'cheap full-day tours' that route through textile/gem shops carrying a 35–40% driver commission.",
+        "Unlicensed Monument Guides: Touts outside Amer Fort or City Palace pose as official guides. Always check for an ASI / State Tourism ID badge."
+      ]
+    };
+  }
+
+  if (key.includes("agra") || key.includes("taj mahal")) {
+    return {
+      tariffRegion: "tier2",
+      tariffLabel: "Tier-2 City Tariff",
+      risk: "High Tout Activity",
+      tip: "💡 Local Tip: The Taj Mahal remains closed every Friday—plan Agra Fort or Mehtab Bagh instead.",
+      scams: [
+        "Marble & Petha Duplicate Trap: Drivers steer tourists to lookalike sweet shops and marble showrooms instead of authentic outlets.",
+        "Fake VIP Fast-Track Entry: Unauthorized agents outside gates sell fake 'skip-the-line' passes. Book online via ASI or official ticket counters."
+      ]
+    };
+  }
+
+  if (key.includes("varanasi") || key.includes("kashi") || key.includes("ghat")) {
+    return {
+      tariffRegion: "tier2",
+      tariffLabel: "Tier-2 City Tariff",
+      risk: "Ghat & Boat Caution",
+      tip: "💡 Local Tip: Walk through the narrow old-city lanes rather than taking e-rickshaws near Dashashwamedh Ghat.",
+      scams: [
+        "Mid-River Boat Extortion: Boatmen sometimes demand extra money mid-stream during Ganga Aarti. Fix the total round-trip fare before boarding.",
+        "Manikarnika Ghat Wood Donation Scam: Touts approach tourists asking for donations to buy cremation wood for poor families—avoid engaging."
+      ]
+    };
+  }
+
+  if (key.includes("delhi") || key.includes("mumbai") || key.includes("bangalore") || key.includes("bengaluru") || key.includes("kolkata")) {
+    return {
+      tariffRegion: "metro",
+      tariffLabel: "Metro Meter Tariff",
+      risk: "Transit Hub Caution",
+      tip: "💡 Local Tip: Use Metro rail from major railway stations and airports for fixed, scam-free transit.",
+      scams: [
+        "Hotel Closed / Road Block Scam: Outside New Delhi or Old Delhi station, drivers claim your booked hotel is shut to divert you to commission hotels.",
+        "Meter Refusal at Night: Auto drivers often refuse meters post-10 PM. Use official prepaid booths, Uber, Ola, or Rapido."
+      ]
+    };
+  }
+
+  return {
+    tariffRegion: "tier2",
+    tariffLabel: "Standard City Tariff",
+    risk: "Standard Travel Caution",
+    tip: "💡 Local Tip: Ask your hotel reception for the standard local auto fare to the nearest railway station or bus stand.",
+    scams: [
+      "Station Exit Overcharging: Walk 50 meters past the main station gate or use the official prepaid auto booth to avoid inflated tourist quotes.",
+      "Unsolicited Recommendations: Cross-check Google Maps reviews before visiting restaurants or shops recommended by local drivers."
+    ]
+  };
+}
+
+// 3. Search Function with LocalStorage Offline Cache
+async function searchDestination(cityQuery) {
+  const userCity = cityQuery.trim();
+  if (!userCity) {
+    cityInput.focus();
     return;
   }
 
-  // Card show karna aur initial message
-  resultCard.classList.remove("hidden");
-  resultCard.style.display = "block";
-  cityNameEl.innerText = userCity;
-  cityDescEl.innerText = "Wikipedia se details load ho rahi hain...";
-  alertsList.innerHTML = "";
+  const cacheKey = "safetrip_v2_" + userCity.toLowerCase();
+  const safetyData = getCitySafetyProfile(userCity);
 
-  //  Wikipedia API se real summary lega
+  // Sync Fare Estimator dropdown automatically with searched city!
+  fareCitySelect.value = safetyData.tariffRegion;
+
+  // Render UI
+  resultCard.classList.remove("hidden");
+  cacheTag.classList.add("hidden");
+  cityNameEl.textContent = userCity;
+  cityDescEl.textContent = "Fetching destination overview...";
+  regionRateTag.textContent = safetyData.tariffLabel;
+  riskBadge.textContent = safetyData.risk;
+  localTipEl.textContent = safetyData.tip;
+
+  alertsList.innerHTML = "";
+  safetyData.scams.forEach(function (scam) {
+    const li = document.createElement("li");
+    li.textContent = scam;
+    alertsList.appendChild(li);
+  });
+
   try {
-    var response = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(userCity));
-    var data = await response.json();
+    const response = await fetch(
+      "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(userCity)
+    );
+    if (!response.ok) throw new Error("Not found");
+    const data = await response.json();
 
     if (data.extract) {
-      cityNameEl.innerText = data.title + " (Travel Safety Radar)";
-      cityDescEl.innerText = data.extract;
+      cityNameEl.textContent = data.title;
+      cityDescEl.textContent = data.extract;
+      localStorage.setItem(cacheKey, JSON.stringify({
+        title: data.title,
+        extract: data.extract
+      }));
     } else {
-      cityDescEl.innerText = "Location verified. Follow the street safety advisories below.";
+      cityDescEl.textContent = "Location verified. Follow the street-level safety advisories below.";
     }
   } catch (err) {
-    cityDescEl.innerText = "Information preview offline hai, par safety checklist active hai.";
+    const saved = localStorage.getItem(cacheKey);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      cityNameEl.textContent = parsed.title;
+      cityDescEl.textContent = parsed.extract;
+      cacheTag.classList.remove("hidden");
+    } else {
+      cityDescEl.textContent = "Offline mode active — Wikipedia preview unavailable, but local safety advisories are ready.";
+    }
   }
+}
 
-  //  City ke hisab se exact alag-alag warnings dikhana
-  var searchKey = userCity.toLowerCase();
-  var scams = [];
+searchBtn.addEventListener("click", function () {
+  searchDestination(cityInput.value);
+});
 
-  // Goa / Beaches
-  if (searchKey.includes("goa") || searchKey.includes("beach") || searchKey.includes("puri") || searchKey.includes("gokarna")) {
-    scams.push("Airport & Station Cab Cartels: Local taxi wale meter nahi chalate aur double rate mangte hain. Official GoaMiles app ya prepaid booth use karein.");
-    scams.push("Beach Watersports Touts: Unregistered agents saste rate ka lalach dete hain. Hamesha certified operators aur life jackets verify karein.");
-    scams.push("Scooter Rental Fuel Trick: Scooters zero fuel ke sath milti hain, aur return ke waqt extra petrol ka refund nahi milta.");
-  }
-  // Himachal / Uttarakhand / Hills (Manali, Shimla, Rishikesh, etc.)
-  else if (searchKey.includes("manali") || searchKey.includes("shimla") || searchKey.includes("kullu") || searchKey.includes("rohtang") || searchKey.includes("rishikesh") || searchKey.includes("mussoorie") || searchKey.includes("nainital") || searchKey.includes("hill")) {
-    scams.push("Roadside Snow Gear Trap: Solang/Rohtang jate waqt roadside dukan wale zabardasti boots/suits rent karne ko bolte hain. Govt rate ₹250 hota hai, ₹1000 na dein.");
-    scams.push("Rohtang Permit Black-Marketing: Local agents govt permit ke naam par 3 guna charge karte hain. Hamesha HP Tourism ki official website se permit book karein.");
-    scams.push("Monsoon & Landslide Alert: Barish ke season mein unpaved pahadi raaston par travel karne se pehle local taxi union se road status check karein.");
-  }
-  // Heritage & Forts (Jaipur, Udaipur, Rajasthan, Jodhpur)
-  else if (searchKey.includes("jaipur") || searchKey.includes("udaipur") || searchKey.includes("jodhpur") || searchKey.includes("rajasthan") || searchKey.includes("fort")) {
-    scams.push("Commission Factory Shopping: Auto wale bolte hain 'Original Blue Pottery ya Sanganeri print factory' le jayenge, jahan 40% guide commission juda hota hai.");
-    scams.push("Fake Monument Guides: Amer Fort ya City Palace ke bahar bina ID wale log guide ban jate hain. Official ASI badge dekh kar hi hire karein.");
-  }
-  // Agra / Taj Mahal
-  else if (searchKey.includes("agra") || searchKey.includes("taj mahal")) {
-    scams.push("Marble & Petha Duplicate Trap: Auto wale branded petha aur genuine marble souvenir ke naam par duplicate dukaano par le jate hain.");
-    scams.push("VIP Fast Entry Scam: Monuments ke bahar unauthorized log VIP line se entry ka jhooth bolte hain. Ticket hamesha official ASI counter se lein.");
-  }
-  // Varanasi / Ghats
-  else if (searchKey.includes("varanasi") || searchKey.includes("kashi") || searchKey.includes("ghat")) {
-    scams.push("Boat Ride Extortion: Sham ki Ganga Aarti ke waqt boat wale beech nadi mein le ja kar extra paise maangte hain. Rate pehle hi clear karein.");
-    scams.push("Manikarnika Ghat Donation Scam: Ghats par log bolte hain antim sanskar ki lakdi ke liye daan do. Yeh completely unauthorized extortion hota hai.");
-  }
-  // Delhi / Metro Transit Hubs
-  else if (searchKey.includes("delhi") || searchKey.includes("mumbai") || searchKey.includes("bangalore") || searchKey.includes("kolkata")) {
-    scams.push("Hotel Closed / Road Block Scam: Railway station ke bahar auto wale claim karte hain ki aapka book hotel seal ho gaya, taaki apne commission wale hotel le jayein.");
-    scams.push("Refusal of Meter: Raat ke waqt auto wale meter se chalne se mana karte hain. Hamesha prepaid booth ya Ola/Uber use karein.");
-  }
-  // Default (Koi bhi dusra Indian town)
-  else {
-    scams.push("Station Transit Overcharging: Station exit ke bahar private cabs se bachein. Prepaid auto counter ya official meter prefer karein.");
-    scams.push("Local Driver Recommendations: Auto/Cab drivers ke bataye kisi bhi specific hotel ya gift shop par jane se pehle Google rating check karein.");
-  }
-
-  // Alerts ko screen par jodega
-  for (var i = 0; i < scams.length; i++) {
-    var li = document.createElement("li");
-    li.innerText = scams[i];
-    alertsList.appendChild(li);
+cityInput.addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    searchDestination(cityInput.value);
   }
 });
 
-// 2. Simple Fare Calculator
+document.querySelectorAll(".chip").forEach(function (chip) {
+  chip.addEventListener("click", function () {
+    const city = chip.getAttribute("data-city");
+    cityInput.value = city;
+    searchDestination(city);
+  });
+});
+
+// 4. Regional Tariff Fare Estimator + Overcharge Detector
+const TARIFF_TABLE = {
+  metro: { auto: [30, 11], cab: [55, 17], bike: [15, 7] },
+  tier2: { auto: [25, 12], cab: [60, 18], bike: [15, 7] },
+  hills: { auto: [50, 18], cab: [100, 26], bike: [30, 12] },
+  goa:   { auto: [60, 20], cab: [120, 28], bike: [35, 12] }
+};
+
 calcBtn.addEventListener("click", function () {
-  var distance = parseFloat(distanceInput.value);
-  var vehicle = vehicleSelect.value;
+  const region = fareCitySelect.value;
+  const vehicle = vehicleSelect.value;
+  const distance = parseFloat(distanceInput.value);
+  const quoted = parseFloat(quotedInput.value);
+  const isNight = nightChargeCheckbox.checked;
 
   if (isNaN(distance) || distance <= 0) {
-    alert("Kripya sahi distance (KM) dalein!");
+    distanceInput.focus();
     return;
   }
 
-  var baseRate = 0;
-  var perKm = 0;
+  const [baseRate, perKm] = TARIFF_TABLE[region][vehicle];
+  const vehicleLabel = vehicle === "auto" ? "Auto Rickshaw" : vehicle === "cab" ? "City Cab" : "Bike Taxi";
 
-  if (vehicle === "auto") {
-    baseRate = 30;
-    perKm = 12;
-  } else if (vehicle === "cab") {
-    baseRate = 60;
-    perKm = 18;
-  } else if (vehicle === "bike") {
-    baseRate = 15;
-    perKm = 7;
+  let estimated = baseRate + (distance * perKm);
+  if (isNight) {
+    estimated *= 1.25;
   }
 
-  var estimated = Math.round(baseRate + (distance * perKm));
-  var minFair = Math.round(estimated * 0.95);
-  var maxFair = Math.round(estimated * 1.15);
+  const minFair = Math.round(estimated * 0.95);
+  const maxFair = Math.round(estimated * 1.12);
 
-  fareResult.innerText = "Expected Fair Price: ₹" + minFair + " - ₹" + maxFair + " (Official booth rate)";
+  fareRangeEl.textContent = `Fair Estimate: ₹${minFair} – ₹${maxFair}`;
+  fareBreakdownEl.textContent = `${vehicleLabel} • ${distance} KM (Base ₹${baseRate} + ₹${perKm}/km${isNight ? " + 25% Night Surge" : ""})`;
+
+  // Overcharge Detection Logic
+  if (!isNaN(quoted) && quoted > 0) {
+    overchargeVerdictEl.classList.remove("hidden", "verdict-fair", "verdict-high", "verdict-scam");
+    if (quoted <= maxFair) {
+      overchargeVerdictEl.textContent = `✅ Fair Quote: ₹${quoted} is within the standard local range.`;
+      overchargeVerdictEl.classList.add("verdict-fair");
+    } else if (quoted <= maxFair * 1.3) {
+      const extra = quoted - maxFair;
+      overchargeVerdictEl.textContent = `⚠️ Slightly High: Driver is asking ~₹${extra} above fair meter rate. Negotiate down to ₹${maxFair}.`;
+      overchargeVerdictEl.classList.add("verdict-high");
+    } else {
+      const extra = quoted - maxFair;
+      overchargeVerdictEl.textContent = `🚨 Overcharge Alert: ₹${quoted} is ₹${extra} over the fair fare! Walk away or use a prepaid booth/app.`;
+      overchargeVerdictEl.classList.add("verdict-scam");
+    }
+  } else {
+    overchargeVerdictEl.classList.add("hidden");
+  }
+
   fareResult.classList.remove("hidden");
-  fareResult.style.display = "block";
+});
+
+// 5. Persistent Safety Checklist
+const checkBoxes = document.querySelectorAll(".safety-check");
+const progressBadge = document.getElementById("checklist-progress");
+
+function syncChecklist() {
+  let checkedCount = 0;
+  const state = {};
+  checkBoxes.forEach(function (box) {
+    const id = box.getAttribute("data-id");
+    state[id] = box.checked;
+    if (box.checked) checkedCount++;
+  });
+  progressBadge.textContent = `${checkedCount} / ${checkBoxes.length} Checked`;
+  localStorage.setItem("safetrip_checklist", JSON.stringify(state));
+}
+
+// Load saved checklist state on startup
+const savedChecklist = JSON.parse(localStorage.getItem("safetrip_checklist") || "{}");
+checkBoxes.forEach(function (box) {
+  const id = box.getAttribute("data-id");
+  if (savedChecklist[id]) box.checked = true;
+  box.addEventListener("change", syncChecklist);
+});
+syncChecklist();
+
+// 6. Offline GPS Coordinate Copy
+copyLocBtn.addEventListener("click", function () {
+  if (!navigator.geolocation) {
+    gpsFeedback.textContent = "Geolocation is not supported by this browser.";
+    gpsFeedback.classList.remove("hidden");
+    return;
+  }
+
+  copyLocBtn.textContent = "Locating...";
+  navigator.geolocation.getCurrentPosition(
+    function (pos) {
+      const lat = pos.coords.latitude.toFixed(5);
+      const lon = pos.coords.longitude.toFixed(5);
+      const text = `Emergency Location: https://maps.google.com/?q=${lat},${lon} (${lat}, ${lon})`;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      }
+      gpsFeedback.textContent = `Copied: ${lat}, ${lon} — Ready to paste in SMS or WhatsApp.`;
+      gpsFeedback.classList.remove("hidden");
+      copyLocBtn.textContent = "📍 Copy GPS Link";
+    },
+    function () {
+      gpsFeedback.textContent = "Location permission blocked. Enable GPS in browser settings to copy coordinates.";
+      gpsFeedback.classList.remove("hidden");
+      copyLocBtn.textContent = "📍 Copy GPS Link";
+    }
+  );
 });
