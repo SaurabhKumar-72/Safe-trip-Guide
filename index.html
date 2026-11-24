@@ -4,72 +4,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeTrip Guide - Tourist Safety & Fare Estimator</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SafeTrip Guide — Street-Smart Tourist Safety & Fare Radar</title>
+    <link rel="stylesheet" href="ss.css">
 </head>
 
 <body>
 
     <header class="header">
-        <div class="container">
-            <h1>SafeTrip Guide</h1>
-            <p>Street-Smart Tourist Safety Alerts & Fair Price Estimator for India</p>
+        <div class="container header-flex">
+            <div>
+                <div class="brand-row">
+                    <span class="brand-badge">INDIA TRAVEL RADAR</span>
+                    <span class="version-tag">OFFLINE-FIRST</span>
+                </div>
+                <h1>SafeTrip Guide</h1>
+                <p>Street-Smart Scam Advisories, City-Specific Fare Checker & SOS Toolkit</p>
+            </div>
+            <div id="network-status" class="status-pill online">● Online & Live</div>
         </div>
     </header>
 
     <main class="container">
-        <!-- Search Section -->
+        <!-- 1. Destination Safety Radar -->
         <section class="card">
-            <h2>Search Indian Destination</h2>
-            <p class="subtitle">Enter any Indian city, hill station, or heritage town (e.g., Manali, Goa, Jaipur,
-                Varanasi, Delhi):</p>
+            <div class="card-top">
+                <div>
+                    <h2>1. Destination Safety Radar</h2>
+                    <p class="subtitle">Check live city context, local scam patterns, and ground precautions:</p>
+                </div>
+            </div>
+
             <div class="input-group">
-                <input type="text" id="city-input" placeholder="Type city name here...">
-                <button id="search-btn">Check Safety & Guide</button>
+                <input type="text" id="city-input" placeholder="Search city (e.g. Manali, Jaipur, Goa, Delhi, Varanasi)..." autocomplete="off">
+                <button id="search-btn">Scan City</button>
+            </div>
+
+            <div class="quick-chips">
+                <span>Quick Picks:</span>
+                <button type="button" class="chip" data-city="Delhi">Delhi</button>
+                <button type="button" class="chip" data-city="Jaipur">Jaipur</button>
+                <button type="button" class="chip" data-city="Manali">Manali</button>
+                <button type="button" class="chip" data-city="Goa">Goa</button>
+                <button type="button" class="chip" data-city="Varanasi">Varanasi</button>
+                <button type="button" class="chip" data-city="Agra">Agra</button>
+            </div>
+
+            <!-- Search Result Drawer -->
+            <div id="result-card" class="result-panel hidden">
+                <div class="result-header">
+                    <div>
+                        <h3 id="city-name"></h3>
+                        <div class="meta-tags">
+                            <span id="region-rate-tag" class="info-pill">Standard Metro Tariff</span>
+                            <span id="cache-tag" class="cache-pill hidden">⚡ Loaded from Offline Cache</span>
+                        </div>
+                    </div>
+                    <div class="safety-meter-box">
+                        <span class="meter-label">Tourist Vigilance</span>
+                        <span id="risk-badge" class="risk-pill">Moderate</span>
+                    </div>
+                </div>
+
+                <p id="city-desc" class="wiki-summary"></p>
+
+                <div class="advisory-box">
+                    <h4>⚠️ Ground-Level Scam & Safety Advisories</h4>
+                    <ul id="alerts-list"></ul>
+                </div>
+
+                <div class="tip-strip" id="local-tip"></div>
             </div>
         </section>
 
-        <!-- Destination Result Card -->
-        <section id="result-card" class="card hidden">
-            <h3 id="city-name"></h3>
-            <p id="city-desc"></p>
-
-            <div class="advisory-box">
-                <h4>Ground Safety Alerts & Tourist Precautions:</h4>
-                <ul id="alerts-list"></ul>
-            </div>
-        </section>
-
+        <!-- 2. Fair Fare & Overcharge Detector -->
         <section class="card">
-            <h2>Fair Fare Estimator (India)</h2>
-            <p class="subtitle">Check realistic local transit pricing to prevent overcharging:</p>
+            <h2>2. Fair Fare & Overcharge Detector</h2>
+            <p class="subtitle">Calculates realistic fares using regional tariff rules and flags driver overcharging:</p>
 
             <div class="calculator-grid">
                 <div class="input-field">
-                    <label for="distance-input">Estimated Distance (in KM):</label>
-                    <input type="number" id="distance-input" placeholder="e.g. 8" min="1">
+                    <label for="fare-city-select">City / Terrain Tariff</label>
+                    <select id="fare-city-select">
+                        <option value="metro">Metro Cities (Delhi / Mumbai / Bengaluru)</option>
+                        <option value="hills">Hill Stations (Manali / Shimla / Rishikesh)</option>
+                        <option value="goa">Coastal / Goa (High Base Tourist Tariff)</option>
+                        <option value="tier2">Tier-2 Heritage Cities (Jaipur / Agra / Varanasi)</option>
+                    </select>
                 </div>
 
                 <div class="input-field">
-                    <label for="vehicle-select">Vehicle Type:</label>
+                    <label for="vehicle-select">Vehicle Type</label>
                     <select id="vehicle-select">
-                        <option value="auto">Auto Rickshaw (Standard ~₹12/KM)</option>
-                        <option value="cab">Taxi / Cab (Standard ~₹18/KM)</option>
-                        <option value="bike">Bike Taxi (Standard ~₹7/KM)</option>
+                        <option value="auto">Auto Rickshaw</option>
+                        <option value="cab">City Taxi / Cab</option>
+                        <option value="bike">Bike Taxi</option>
                     </select>
+                </div>
+
+                <div class="input-field">
+                    <label for="distance-input">Estimated Distance (KM)</label>
+                    <input type="number" id="distance-input" placeholder="e.g. 8" min="1" max="500">
+                </div>
+
+                <div class="input-field">
+                    <label for="quoted-input">Driver Quoted Price (₹) <span class="opt">(Optional)</span></label>
+                    <input type="number" id="quoted-input" placeholder="e.g. 350" min="1">
                 </div>
             </div>
 
-            <button id="calc-fare-btn">Calculate Fair Estimate</button>
-            <div id="fare-result" class="result-badge hidden"></div>
+            <div class="toggle-row">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="night-charge">
+                    <span>Night Hours (11:00 PM – 5:00 AM • +25% Night Tariff)</span>
+                </label>
+            </div>
+
+            <button id="calc-fare-btn" class="full-btn">Verify Fare & Check Overcharge</button>
+
+            <div id="fare-result" class="result-badge hidden">
+                <div class="fare-main" id="fare-range"></div>
+                <div class="fare-sub" id="fare-breakdown"></div>
+                <div id="overcharge-verdict" class="verdict-box hidden"></div>
+            </div>
+        </section>
+
+        <!-- 3. Pre-Transit Safety Checklist (Persistent) -->
+        <section class="card">
+            <div class="checklist-header">
+                <div>
+                    <h2>3. Street-Smart Boarding Checklist</h2>
+                    <p class="subtitle">Quick 10-second verification before stepping into an unbooked cab or auto:</p>
+                </div>
+                <span id="checklist-progress" class="progress-badge">0 / 4 Checked</span>
+            </div>
+
+            <div class="checklist-items">
+                <label class="check-row">
+                    <input type="checkbox" class="safety-check" data-id="chk1">
+                    <span>Verified vehicle license plate & clicked a photo for family/friends</span>
+                </label>
+                <label class="check-row">
+                    <input type="checkbox" class="safety-check" data-id="chk2">
+                    <span>Confirmed total fare upfront or insisted on running meter / prepaid slip</span>
+                </label>
+                <label class="check-row">
+                    <input type="checkbox" class="safety-check" data-id="chk3">
+                    <span>Downloaded offline Google Maps area for low-signal zones</span>
+                </label>
+                <label class="check-row">
+                    <input type="checkbox" class="safety-check" data-id="chk4">
+                    <span>Declined driver's "alternate hotel / factory outlet" detour suggestions</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- 4. Emergency SOS & Tourist Helplines -->
+        <section class="card sos-card">
+            <div class="sos-header">
+                <div>
+                    <h2>4. Emergency SOS & Tourist Helplines</h2>
+                    <p class="subtitle">Works completely offline. One-tap dial or copy GPS coordinates for SMS:</p>
+                </div>
+                <button type="button" id="copy-loc-btn" class="secondary-btn">📍 Copy GPS Link</button>
+            </div>
+
+            <div class="helpline-grid">
+                <a href="tel:112" class="helpline-item">
+                    <span class="num">112</span>
+                    <span class="label">National Emergency</span>
+                </a>
+                <a href="tel:1363" class="helpline-item">
+                    <span class="num">1363</span>
+                    <span class="label">Tourist Helpline</span>
+                </a>
+                <a href="tel:100" class="helpline-item">
+                    <span class="num">100</span>
+                    <span class="label">Police Control</span>
+                </a>
+                <a href="tel:1091" class="helpline-item">
+                    <span class="num">1091</span>
+                    <span class="label">Women Safety</span>
+                </a>
+            </div>
+            <p id="gps-feedback" class="gps-text hidden"></p>
         </section>
     </main>
 
     <footer class="footer">
-        <p>SafeTrip Guide | Smart Tourism Track</p>
+        <p>SafeTrip Guide • Built by Team Codecrafter • Works Online & Offline</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="ss.js"></script>
 </body>
 
 </html>
